@@ -39,13 +39,14 @@
 #include "util/FastIO.h"
 #include "util/Logger.h"
 #include "util/ZFile.h"
-#include "util/constants.h"
 #include "Types.h"
 #include "NgramModel.h"
 
 using std::vector;
 
 namespace mitlm {
+
+#define MAXLINE 4096
 
 static inline int fprint_LProb(FILE *file, double prob) {
     if (prob == 0) {
@@ -96,10 +97,10 @@ NgramModel::LoadCorpus(vector<CountVector> &countVectors,
     }
 
     // Accumulate counts for each n-gram in corpus file.
-    char line[mitlm::kMaxLineLength];
+    char line[MAXLINE];
     vector<VocabIndex> words(256);
     vector<NgramIndex> hists(size(), -1);
-    while (getline(corpusFile, line, mitlm::kMaxLineLength)) {
+    while (getline(corpusFile, line, MAXLINE)) {
         if (strncmp(line, "<DOC ", 5) == 0 || strcmp(line, "</DOC>") == 0)
             continue;
 
@@ -177,9 +178,9 @@ NgramModel::LoadCounts(vector<CountVector> &countVectors,
     }
 
     // Accumulate counts for each n-gram in counts file.
-    char                    line[mitlm::kMaxLineLength];
+    char                    line[MAXLINE];
     vector<VocabIndex> words(256);
-    while (getline(countsFile, line, mitlm::kMaxLineLength)) {
+    while (getline(countsFile, line, MAXLINE)) {
         if (line[0] == '\0' || line[0] == '#') continue;
 
         words.clear();
@@ -258,12 +259,12 @@ NgramModel::LoadLM(vector<ProbVector> &probVectors,
     if (lmFile == NULL) throw std::invalid_argument("Invalid file");
 
     // Read ARPA LM header.
-    char           line[mitlm::kMaxLineLength];
+    char           line[MAXLINE];
     size_t         o, len;
     vector<size_t> ngramLengths(1);
-    while (getline(lmFile, line, mitlm::kMaxLineLength) && strcmp(line, "\\data\\") != 0)
+    while (getline(lmFile, line, MAXLINE) && strcmp(line, "\\data\\") != 0)
         /* NOP */;
-    while (getline(lmFile, line, mitlm::kMaxLineLength)) {
+    while (getline(lmFile, line, MAXLINE)) {
         unsigned int o, len;
         if (sscanf(line, "ngram %u=%u", &o, &len) != 2)
             break;
@@ -287,13 +288,13 @@ NgramModel::LoadLM(vector<ProbVector> &probVectors,
         probs.reset(ngramLengths[o]);
         if (hasBow) bows.reset(ngramLengths[o]);
 
-        getline(lmFile, line, mitlm::kMaxLineLength);
+        getline(lmFile, line, MAXLINE);
         unsigned int i;
         if (sscanf(line, "\\%u-grams:", &i) != 1 || i != o) {
             throw std::invalid_argument("Unexpected file format.");
         }
         while (true) {
-            getline(lmFile, line, mitlm::kMaxLineLength);
+            getline(lmFile, line, MAXLINE);
             size_t lineLen = strlen(line);
             if (line[0] == '\0') break;  // Empty line ends section.
             char *p = &line[0];
@@ -340,7 +341,7 @@ NgramModel::LoadLM(vector<ProbVector> &probVectors,
     }
 
     // Read ARPA LM footer.
-    while (getline(lmFile, line, mitlm::kMaxLineLength) &&
+    while (getline(lmFile, line, MAXLINE) &&
            strcmp(line, "\\end\\") != 0)  /* NOP */;
 
     // Sort and resize probs/bows to actual size.
@@ -456,11 +457,11 @@ NgramModel::LoadEvalCorpus(vector<CountVector> &probCountVectors,
         bowCountVectors[i].reset(_vectors[i].size(), 0);
 
     // Accumulate counts of prob/bow for computing perplexity of corpusFilename.
-    char                    line[mitlm::kMaxLineLength];
+    char                    line[MAXLINE];
     size_t                  numOOV = 0;
     size_t                  numWords = 0;
     vector<VocabIndex> words(256);
-    while (getline(corpusFile, line, mitlm::kMaxLineLength)) {
+    while (getline(corpusFile, line, MAXLINE)) {
         if (strncmp(line, "<DOC ", 5) == 0 || strcmp(line, "</DOC>") == 0)
             continue;
 
@@ -517,9 +518,9 @@ NgramModel::LoadFeatures(vector<DoubleVector> &featureVectors,
         featureVectors[i].reset(sizes(i), 0);  // Initialize to 0.
 
     // Load feature value for each n-gram in feature file.
-    char                    line[mitlm::kMaxLineLength];
+    char                    line[MAXLINE];
     vector<VocabIndex> words(256);
-    while (getline(featureFile, line, mitlm::kMaxLineLength)) {
+    while (getline(featureFile, line, MAXLINE)) {
         if (line[0] == '\0' || line[0] == '#') continue;
         words.clear();
         char *p = &line[0];
@@ -828,10 +829,10 @@ NgramModel::_LoadFrequency(vector<DoubleVector> &freqVectors,
     }
 
     // Accumulate counts for each n-gram in corpus file.
-    char line[mitlm::kMaxLineLength];
+    char line[MAXLINE];
     vector<VocabIndex> words(256);
     vector<NgramIndex> hists(maxSize);
-    while (getline(corpusFile, line, mitlm::kMaxLineLength)) {
+    while (getline(corpusFile, line, MAXLINE)) {
         if (strcmp(line, "</DOC>") == 0) {
             // Accumulate frequency.
             numDocs++;
@@ -907,10 +908,10 @@ NgramModel::_LoadEntropy(vector<DoubleVector> &entropyVectors,
     }
 
     // Accumulate counts for each n-gram in corpus file.
-    char line[mitlm::kMaxLineLength];
+    char line[MAXLINE];
     vector<VocabIndex> words(256);
     vector<NgramIndex> hists(maxSize);
-    while (getline(corpusFile, line, mitlm::kMaxLineLength)) {
+    while (getline(corpusFile, line, MAXLINE)) {
         if (strcmp(line, "</DOC>") == 0) {
             // Accumulate frequency.
             numDocs++;
@@ -989,12 +990,12 @@ NgramModel::_LoadTopicProbs(vector<DoubleVector> &topicProbVectors,
     // Accumulate counts for each n-gram in words.
     size_t      numSentenceWords = 1;
     IndexVector hists(maxSize, -1);
-    char        line[mitlm::kMaxLineLength];
+    char        line[MAXLINE];
     char        wordStr[1024];
     VocabIndex  word;
     int         state, topic;
     size_t      lastTopicState = maxSize;
-    while (getline(hmmldaFile, line, mitlm::kMaxLineLength)) {
+    while (getline(hmmldaFile, line, MAXLINE)) {
         if (line[0] == '#') continue;  // Skip comment lines.
         int numItems = sscanf(line, "%s\t%d\t%d\n", wordStr, &state, &topic);
         if (numItems != 3) throw std::invalid_argument("Bad format");
@@ -1056,11 +1057,11 @@ NgramModel::_LoadTopicProbs2(vector<DoubleVector> &topicProbVectors,
     // Accumulate counts for each n-gram in words.
     size_t      numSentenceWords = 1;
     IndexVector hists(maxSize, 0);
-    char        line[mitlm::kMaxLineLength];
+    char        line[MAXLINE];
     char        wordStr[1024];
     VocabIndex  word;
     int         state, topic;
-    while (getline(hmmldaFile, line, mitlm::kMaxLineLength)) {
+    while (getline(hmmldaFile, line, MAXLINE)) {
         if (line[0] == '#') continue;  // Skip comment lines.
         int numItems = sscanf(line, "%s\t%d\t%d\n", wordStr, &state, &topic);
         if (numItems != 3) throw std::invalid_argument("Bad format");

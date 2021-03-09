@@ -76,10 +76,8 @@ const char *footerDesc_tmpl =
 
 int main(int argc, char* argv[]) {
     // Parse command line options.
-    char *footerDesc = new char[strlen(footerDesc_tmpl)+strlen(PACKAGE_STRING)+1+59];
-    sprintf(footerDesc, footerDesc_tmpl, PACKAGE_STRING);
-    mitlm::CommandOptions opts(headerDesc, footerDesc);
-    delete [] footerDesc;
+    char *footerDesc = "";
+    mitlm::CommandOptions opts(headerDesc, footerDesc);    
     opts.AddOption("h,help", "Print this message.");
     opts.AddOption("verbose", "Set verbosity level.", "1", "int");
     opts.AddOption("o,order", "Set the n-gram order of the estimated LM.", "3", "int");

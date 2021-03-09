@@ -48,6 +48,15 @@
 #define O_BINARY 0
 #endif
 
+#ifdef _WIN32
+#include <stdio.h>
+#include <stdlib.h>
+#define NOMINMAX
+#include <windows.h>
+#define popen _popen
+
+#endif
+
 namespace mitlm {
 
 #if ( defined(WIN32) || defined(_WIN32) ) && !defined(__CYGWIN__)

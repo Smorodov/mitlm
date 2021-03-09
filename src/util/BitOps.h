@@ -42,7 +42,7 @@ namespace mitlm {
 
 // Find the last (most-significant) bit set.
 // Note fls(0) = 0, fls(1) = 1, fls(0x80000000) = 32.
-static __inline__ unsigned long find_last_bit_set(unsigned long x) {
+static inline unsigned long find_last_bit_set(unsigned long x) {
 #ifdef HAVE_X86_ASM
     #if __WORDSIZE == 64
         if (!x) return 0;
@@ -89,11 +89,11 @@ return (x? (((sizeof(unsigned long)*8))- __builtin_clzl(x)): 0);
 }
 
 // Determine if x is a power of 2 or 0.
-static __inline__ bool isPowerOf2(unsigned long x)
+static inline bool isPowerOf2(unsigned long x)
 { return !(x & (x - 1)); }
 
 // Returns the smallest power of 2 larger than x.
-static __inline__ unsigned long nextPowerOf2(unsigned long x)
+static inline unsigned long nextPowerOf2(unsigned long x)
 { return 1UL << find_last_bit_set(x); }
 
 }

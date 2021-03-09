@@ -46,12 +46,13 @@ using std::unordered_map;
 #endif
 
 #include "util/FastIO.h"
-#include "util/constants.h"
 #include "Lattice.h"
 
 using std::vector;
 
 namespace mitlm {
+
+#define MAXLINE 1024
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -106,20 +107,20 @@ Lattice::LoadLattice(ZFile &latticeFile) {
     if (latticeFile == NULL) throw std::invalid_argument("Invalid file");
 
     NodeIndex  startNode, endNode;
-    char       wordStr[mitlm::kMaxLineLength], line[mitlm::kMaxLineLength];
+    char       wordStr[MAXLINE], line[MAXLINE];
     float      weight;
     VocabIndex word;
     size_t     numArcs = 0;
 
     // Read lattice file.
     _Reserve(1024);
-    getline(latticeFile, line, mitlm::kMaxLineLength);
+    getline(latticeFile, line, MAXLINE);
     if (strcmp(line, "#FSTBasic MinPlus") != 0)
         throw std::runtime_error("Invalid lattice FST header.");
-    getline(latticeFile, line, mitlm::kMaxLineLength);
+    getline(latticeFile, line, MAXLINE);
     if (strcmp(line, "I 0") != 0)
         throw std::runtime_error("Invalid lattice FST initial state.");
-    while (getline(latticeFile, line, mitlm::kMaxLineLength)) {
+    while (getline(latticeFile, line, MAXLINE)) {
         if (line[0] == 'T') {
             weight = 0;
             if (sscanf(line, "T %u %u %s %s %f",

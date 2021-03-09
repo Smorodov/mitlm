@@ -40,8 +40,8 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
-#include <string>
 #include <stdexcept>
+#include <string>
 #include <vector>
 #include "Logger.h"
 

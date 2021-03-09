@@ -21,54 +21,9 @@ Currently, MITLM supports the following features:
   * Evaluation: Perplexity
   * File formats: ARPA, binary, gzip, bz2
 
-MITLM is available for download under the MIT License. It has been
-built and tested on 32-bit and 64-bit Intel CPUs running Debian Linux
-7.0. It currently requires the following:
-
-  * ANSI C++/Fortran compiler (GCC 4.7.1+)
-
-For more information about MITLM, please visit:
-
-  https://github.com/mitlm
-
-If you find any BUG and/or want to provide a patch, please file an
-issue about it at:
-
-  https://github.com/mitlm/mitlm/issues
-
-===================================
-Installation from source repository
-===================================
-
-MITLM uses autoconf to detect environment features and configure
-building. If you want to install from the source repository,
-instead of downloading a packaged version, you will need the
-following additional tools (these are not needed if you
-install from a packaged version):
-          autoconf (>=2.69)
-          automake/aclocal (>= 1.15.1)
-          libtool
-          autoconf-archive
-
-If you install from source repository, in order to create the
-configure script, you will need to run (this is not needed if you
-install from a packaged version):
-          autoreconf -i
-
-Finally you can build and install MITLM using the standard procedure:
-          ./configure
-          make
-          make install
-
-=================================
-Installation from packaged source
-=================================
-
-You can build and install MITLM using the standard procedure:
-          ./configure
-          make
-          make install
-
+  It is a CMake version of MITLM toolset, I tested on MSVS 2019 and it not need Forrtan compiler, it uses f2c-ed lbfgs and lbfgsb solvers instead of fortran versions. So seems no need any additional deps.
+  
+MITLM is available for download under the MIT License.
 ===============
 Acknowledgments
 ===============

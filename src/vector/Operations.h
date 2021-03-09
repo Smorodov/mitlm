@@ -111,7 +111,7 @@ struct OpAbs {
 };
 
 struct OpLog {
-    template <typename T> static T Eval(T v) { return log(v); }
+    template <typename T> static T Eval(T v) { return ::log(v); }
 };
 
 struct OpLog10 {
@@ -119,7 +119,7 @@ struct OpLog10 {
 };
 
 struct OpExp {
-    template <typename T> static T Eval(T v) { return exp(v); }
+    template <typename T> static T Eval(T v) { return ::exp(v); }
 };
 
 struct OpPow {
